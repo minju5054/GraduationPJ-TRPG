@@ -1,0 +1,33 @@
+# 가상환경
+venv/
+.env
+
+# 파이썬 캐시/빌드
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+build/
+dist/
+
+# 편집기/OS
+.DS_Store
+Thumbs.db
+.vscode/
+
+# 프런트엔드 빌드/모듈(TRPG 폴더)
+TRPG/node_modules/
+TRPG/dist/
+
+# 제외할 prompts 하위
+prompts/backup/
+prompts/version1/
+prompts/version2/
+prompts/chat_history.json
+prompts/full_system_prompt.txt
+prompts/persona_AQ.json
+prompts/persona.json
+prompts/version1.zip
+
+
