@@ -18,142 +18,216 @@
 </div>
 
 ---
+# Better GM Than Yours
 
-## 📌 목차
-- [프로젝트 개요](#-프로젝트-개요)
-- [TRPG란 무엇인가](#-trpg란-무엇인가)
-- [문제 정의](#-문제-정의)
-- [프로젝트 목표](#-프로젝트-목표)
-- [개발 전략 및 범위(제약 조건)](#-개발-전략-및-범위제약-조건)
-- [키워드](#-키워드)
-- [팀 정보](#-팀-정보)
+> AI가 GM과 KPC를 동시에 수행하는 TRPG 세션 자동화 플랫폼
+> 룰북 RAG, 시나리오 진행, 캐릭터 페르소나, 주사위 판정, 비주얼 노벨형 UI를 결합한 AI-GM 프로젝트입니다.
 
----
-
-## 🧭 프로젝트 개요
-
-🎲 Better GM Than Yours 을(를) 통해, **API 기반 자동화된 TRPG 세션 진행 서비스**를 제안한다.  
-본 프로젝트는 단순한 대화 생성/캐릭터 채팅이 아니라, **룰 기반 판정 시스템**과 **서사 전개**가 유기적으로 결합되는 TRPG의 핵심 구조를 디지털 환경에서 안정적으로 재현하는 것을 목표로 한다.
-
----
-
-## 🌍 배경
-- TRPG(Tabletop Role-Playing Game)는 **규칙(rule)** 과 **시나리오(scenario)** 를 기반으로  
-  플레이어들이 캐릭터를 맡아 **공동의 이야기를 만들어가는 게임**이다.
-- 일반 비디오 게임과 달리, TRPG는 **플레이어 발화/판단에 따라 서사가 유동적으로 변화**한다.
-- 보통 진행에는 **수호자(GM)** 가 필요하며, GM은 다음을 수행한다:
-  - 상황 묘사
-  - 규칙 기반 판정
-  - 결과 해석 및 진행 관리
-
----
-
-## 🧠 TRPG 핵심 구조
-TRPG는 단순 채팅이 아니라, 아래 3요소가 동시에 작동한다.
-
-### 1) 게임적 요소
-- 룰(규칙), 스탯(능력치), 확률(주사위)
-
-### 2) 서사적 요소
-- 대화, 묘사, 즉흥극(역극)
-
-### 3) 상태 변화
-- 플레이어의 “발화”는 자유 채팅이 아니라 **행동 선언**이며,
-- 모든 선택은 이후 **서사 + 게임 상태**를 바꾼다.
-
-
----
-
-## 🧩 우리가 푸는 문제
-TRPG를 즐기려면 현실적으로 아래 비용이 크다.
-
-### 1) 사람 구하기가 어렵다
-- 캐릭터/서사 취향, 유저 성향 차이가 커서 매칭이 쉽지 않다.
-
-### 2) 일정 조정이 어렵다
-- 세션은 암묵적으로 1시간 이상(보통 더 길다).
-- 그 시간 동안 플레이어는 캐릭터에 몰입해 즉흥극을 수행한다.
-
-### 3) GM 부담이 매우 크다
-- 진행 관리 + 규칙 판정 + 결과 해석을 동시에 수행해야 한다.
-- KPC가 필요하면 GM이 **역할극까지 병행**해야 하며 피로도가 급격히 상승한다.
-- 텍스트 기반 세션은 장문 작성/독해로 **읽기·쓰기 부하**가 크다.
-
----
-
-## 🎯 프로젝트 목표
-(프로젝트 이름)은 “기능을 많이 넣기”보다 **세션이 끝까지 돌아가는 최소 조건**을 검증한다.
-
-### 목표 1) CoC 7판 단일 룰북 기반 세션 제공
-- Call of Cthulhu 7판(CoC 7th)의 **스탯 구조/판정 방식**을 그대로 반영
-- 탐사·공포 중심 TRPG의 게임성을 유지
-
-### 목표 2) 판정 ↔ 서사 결합
-- 판정 결과/상태 변화가 **서사 전개에 직접 반영**되도록 설계
-- 단순 캐릭터 채팅이 아닌 **규칙 기반 게임 플레이 전제의 서사 생성**
-
-### 목표 3) TRPG 전용 프론트(UI)
-- 단순 채팅 UI 탈피
-- 비선형적 진행 + 스탯 관리/확인을 쉽게
-- 사용자가 “내 선택의 의미”를 직관적으로 파악
-
-### 목표 4) 시나리오 업로드 기반 세션
-- 사용자가 직접 선택/작성한 시나리오 텍스트 업로드
-- 팬메이드 시나리오 문화 유지 (플랫폼 종속 최소화)
-
-### 목표 5) 세션 소요 시간 단축 & 완결 지향
-- GM/KPC 역할을 API로 수행해 **진행 기복을 줄이고 속도를 개선**
-- “chit-chat”이 아니라 **세션 완결을 지향하는 task-oriented 서비스**
-
----
-
-## 🏗️ 개발 범위 및 제약
-본 프로젝트는 **기능 확장보다 검증**을 우선한다.
-
-### 범위 1) 1회 완결형(단일 세션)
-- 시작 → 진행 → 판정 → 종료가 끊기지 않는지 검증
-- 장기 캠페인/다회차 누적은 제외
-
-### 범위 2) 최소 모듈 + 단일 시나리오
-- 룰북: CoC 7판 고정
-- 시나리오: 짧고 단순한 구조 1개로 검증
-
-### 범위 3) 1:1 구성(플레이어 1 + KPC 1)
-- LLM이 **GM + KPC를 동시에 수행**
-- 단일 API 호출 구조에서 복수 역할 유지 가능성 검증
-- 장르: 상호작용이 비교적 단순한 로맨스(요소 포함)로 제한
-
-### 범위 4) 게임 요소 최소화
-- 주사위 판정/스탯 성공·실패 판단 포함
-- 복잡한 전투/반복 판정 구조는 배제
-
-### 범위 5) 로컬 실행(서버 운영 제외)
-- 별도 서버/동시접속 처리 제외
-- 로컬 환경에서 API 호출로 세션 진행
-
-### 범위 6) 3시간 이내 분량
-- “세션 완결”을 명확히 드러내기 위한 제한
-- 탐사·판단·결말이 포함된 최소 TRPG 경험 제공
-
----
-
-## 🔖 키워드
-- TRPG / Tabletop Role-Playing Game  
-- Call of Cthulhu 7th (CoC 7판)  
-- Rule-based Narration / 판정-서사 결합  
-- GM & KPC 자동화  
-- Session Completion / 세션 완결 지향  
-- Scenario Upload / 팬메이드 시나리오 활용  
-
----
-
-### 📎 (선택) 참고/주의
-- 본 프로젝트는 “대화가 길어질수록 좋은” 형태가 아니라, **세션의 시작부터 종료까지 완결**을 지향한다.
-- 현재 버전은 **기능 검증(프로토타입)** 중심으로 설계되었다.
-
----
+<br />
 
 ## Final Report
 
+프로젝트의 전체 기획, 구현 구조, 기술 설명, 데모 UI, 창업 플랜, 멘토링 피드백은 아래 최종 결과 보고서에서 확인할 수 있습니다.
+
 [View Final Report](https://minju5054.github.io/GraduationPJ-TRPG/)
 
+<br />
+
+## Project Overview
+
+**Better GM Than Yours**는 TRPG(Tabletop Role-Playing Game)에서 가장 큰 부담이 되는 GM(Game Master) 역할을 AI로 자동화하는 프로젝트입니다.
+
+기존의 일반 챗봇은 자유로운 대화는 가능하지만, TRPG 세션에 필요한 룰 기반 판정, 장면 진행, 캐릭터 반응, 세션 상태 관리가 불안정합니다. 본 프로젝트는 LLM을 단순 대화 상대가 아니라 **TRPG 세션을 진행하는 AI-GM 엔진**으로 설계했습니다.
+
+AI-GM은 사용자의 행동 입력을 바탕으로 현재 장면을 해석하고, 룰북 RAG와 캐릭터 데이터를 참고해 GM 서술, KPC 대사, 주사위 판정 결과를 생성합니다. 또한 배경 이미지와 캐릭터 스탠딩 이미지를 결합해 텍스트 중심 세션을 비주얼 노벨형 UI로 확장했습니다.
+
+<br />
+
+## Demo UI
+
+![Demo UI](docs/BetterGMThanYours_readable_assets/demo_ui_entrance.png)
+
+<br />
+
+## Key Features
+
+### AI-GM Session Engine
+
+* GM 없이 TRPG 세션 진행
+* 사용자 입력에 따른 장면 묘사와 사건 전개
+* KPC 대사 및 반응 자동 생성
+* 세션 로그와 진행 상태 관리
+* 섹션 종료 조건 감지 및 다음 장면 연결
+
+### Rulebook-Based RAG
+
+* Call of Cthulhu 7th Edition 룰북 기반 검색
+* 판정 의도가 포함된 사용자 행동을 쿼리로 변환
+* 관련 룰 조항 검색 후 판정 근거로 활용
+* 성공 / 실패 / Hard Success / Extreme Success 판정 반영
+
+### Character Persona System
+
+* PC / KPC 정보 관리
+* persona.json 기반 캐릭터 성격 구성
+* Big Five 성격 수치, 관계 정보, 신념, 말투 반영
+* KPC의 일관된 대화와 행동 생성
+
+### Visual Novel-Style UI
+
+* 시나리오 장소별 배경 이미지 표시
+* 캐릭터 스탠딩 이미지를 배경 위에 합성
+* 말하는 캐릭터는 전면 강조
+* 말하지 않는 캐릭터는 dim 처리
+* 채팅 로그에 캐릭터 초상화 기반 프로필 표시
+
+### Image Layer
+
+* 정적 배경 이미지 생성
+* 캐릭터 초상화 생성
+* `[장소: X]` 태그 기반 배경 전환
+* 생성된 이미지 자산을 세션 UI와 연결
+
+<br />
+
+## System Architecture
+
+![System Architecture](docs/BetterGMThanYours_readable_assets/updatedarch_fixed_preview.png)
+
+<br />
+
+## Core Flow
+
+```text
+User Input
+   ↓
+AI-GM Session Loop
+   ↓
+Context Builder
+   ↓
+Rulebook / Scenario / Character Retrieval
+   ↓
+LLM Generation
+   ↓
+Dice & Rule Judgment
+   ↓
+GM Narrative + KPC Dialogue
+   ↓
+Text + Image Session Output
+```
+
+<br />
+
+## Tech Stack
+
+| Area        | Stack                                             |
+| ----------- | ------------------------------------------------- |
+| Back-End    | FastAPI                                           |
+| Database    | MongoDB                                           |
+| AI          | LLM + Custom RAG                                  |
+| Rule System | Call of Cthulhu 7th Edition                       |
+| Image       | Static Background / Character Portrait Generation |
+| Front-End   | Visual Novel-style Session UI                     |
+| Report Page | HTML / CSS / GitHub Pages                         |
+
+<br />
+
+## Directory Structure
+
+```text
+GraduationPJ-TRPG/
+├── TRPG/                         # React + Vite 기반 프론트엔드
+│   ├── public/
+│   │   └── vite.svg
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── data/
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── .gitignore
+│   ├── README.md
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   └── vite.config.js
+│
+├── database/                     # MongoDB 연동 및 stat DB 처리
+│   ├── database.py
+│   └── database_stat.py
+│
+├── docs/                         # GitHub Pages용 최종 결과 보고서
+│   ├── BetterGMThanYours_readable_assets/
+│   ├── index.html
+│   └── style_pdf_safe_redesign.css
+│
+├── generated_assets/             # 생성된 이미지 자산
+│   ├── backgrouds/
+│   ├── characters/
+│   └── sds/
+│
+├── models/                       # 페르소나 및 프롬프트 구성 모델
+│   ├── persona.py
+│   ├── persona_prompt.py
+│   ├── prompt_base.py
+│   └── type_model.py
+│
+├── prompts/                      # 세션 진행용 프롬프트 / 시나리오 데이터
+│   ├── chat_history.json
+│   ├── full_system_prompt.txt
+│   ├── persona.json
+│   ├── persona_AQ.json
+│   ├── print_formatting_guide.txt
+│   ├── scenario_secret.txt
+│   ├── scene_public1.txt
+│   ├── scene_public2.txt
+│   ├── scene_public3.txt
+│   ├── scene_public4.txt
+│   ├── scene_public5.txt
+│   ├── scene_public6.txt
+│   ├── scene_public7.txt
+│   └── trpg_rules.txt
+│
+├── services/                     # LLM, RAG, 판정, 프롬프트 서비스
+│   ├── chat_openai.py
+│   ├── judge.py
+│   ├── prompt_service.py
+│   └── rag.py
+│
+├── .env.example
+├── .gitignore
+├── CHANGES.md
+├── README.md
+├── Retrieval.py                  # RAG 검색 / retrieval 실행 로직
+├── chain.py                      # LLM 체인 실행 로직
+└── main.py                       # FastAPI 백엔드 진입점
+```
+
+<br />
+
+## Project Pages
+
+* [Final Report](https://minju5054.github.io/GraduationPJ-TRPG/)
+* [Repository](https://github.com/minju5054/GraduationPJ-TRPG)
+
+<br />
+
+## Project Period
+
+2026.03.03 - 2026.06.30
+
+<br />
+
+## Team
+
+**4조 밥사조**
+
+<br />
+
+## Project Goal
+
+본 프로젝트의 목표는 LLM을 활용해 “그럴듯한 대화”를 만드는 것이 아니라, TRPG 세션에 필요한 **룰, 판정, 캐릭터 반응, 장면 진행, 시각적 출력**을 하나의 실행 루프로 통합하는 것입니다.
+
+이를 통해 사용자는 사람 GM 없이도 언제든 시나리오 기반 TRPG 세션을 시작하고, AI-GM과 KPC가 반응하는 몰입형 세션을 경험할 수 있습니다.
