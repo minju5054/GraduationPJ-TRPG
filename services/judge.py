@@ -1,8 +1,11 @@
+import asyncio
+import re
 from database.database_stat import collection2
 from database.database import collection
 from models.type_model import DiceMessage
 from pydantic import BaseModel, Field
 from langchain_openai import ChatOpenAI
+from Retrieval import search_with_references
 
 class StatCheckRequirement(BaseModel):
     target_key: str = Field(description="캐릭터 데이터에서 가져와야 할 스탯의 정확한 키 이름 (예: 'INT', 'STR', '관찰력')")
@@ -10,24 +13,44 @@ class StatCheckRequirement(BaseModel):
     reasoning: str = Field(description="이 스탯을 선택한 이유")
 
 async def dicejudgement(request: DiceMessage):
-    # rag part 
+    # rag part
         # 이전 대화 assistant message(content) 가져와서 rag의 querytext로 활용
+        # role=assistant 로 직접 필터 -> 주사위 로그/유저 입력을 건너뛰려 skip 쓸 필요 없음
+        # created_at 은 '분' 단위라 같은 분에 assistant 가 여러 개면 순서가 모호함
+        #  -> _id(ObjectId, 삽입순서 보장) 를 보조 정렬로 써서 진짜 최신 메시지를 확정
     cursor = (
-        collection.find({"room_id": request.room_id})
-        .sort("created_at", -1)
-        .skip(1)
+        collection.find({"room_id": request.room_id, "role": "assistant", "type": "talk"})
+        .sort([("created_at", -1), ("_id", -1)])
         .limit(1)
     )
     result_list = await cursor.to_list(length=1)
     user_context = result_list[0].get("content", "") if result_list else ""
-        # return rule 출력 
-    rule_text = "판정의 성공과 실패 판정의 최종결과는 성공 아니면 실패입니다. 나온 숫자에 비례해서 더 크게 성공하거나 더 적게 성공하는 것은 아닙니다. 판정은 플레이어가 목표를 밝힌 다음에 합니다. 판정 결과가 필 요한 값 이하이면 목표를 완전히 달성합니다. 결과가 기능수치의 절반이나 5분의 1 이하로 나온다고 해서 꼭 더 크게 성공하는 것은 아닙니다. 결과의 자세한 해석은 수호자의 판단에 따릅니다.성공 판정을 해서 수호자가 설정한 값 이하로 나오면 탐사자는 판정 전에 정한 목표를 달성합니다. 결과를 묘사할 때 플레이어의 참여를 장려하세요. 플레이어가 탐사자의 행동만이 아니라 NPC와 주변 상황에 관한 묘사까지 해도 괜찮습니다. 수호자와 대화를 통해 얼마든지 조율이 가능하기 때문입니다. 따라서, 성공한 판정의 결과는 플레이어와 수호자가 함께 묘사하게 됩니다. 관찰 판정은 지능 스탯으로 정해집니다" 
+    # RAG: "관찰 판정을 어떻게 하는가" 같은 판정 메커니즘을 룰북에서 가져온다.
+    #  - GM 메시지의 [판정 요청] 블록에 ' 기능: 관찰력 ...' 형태로 판정 종류가 명시됨
+    #    -> 분위기 서사 전체가 아니라 이 '기능'을 쿼리로 써야 정확한 룰이 검색됨
+    #  - search_with_references 는 동기(faiss/임베딩)라 async 이벤트 루프를 막지 않게 to_thread 로 실행
+    #    ("제N장 참고" 식 상호참조까지 따라가 실제 필요한 본문을 모음 - multi-hop)
+    #  - 판정 원리(주사위 <= 스탯)는 아래 프롬프트 본문에 따로 명시되어 있어, 룰 텍스트가 비어도 판정은 동작
+    skill_match = re.search(r"기능:\s*([^\n(（]+)", user_context)
+    skill = skill_match.group(1).strip() if skill_match else ""
+    # 기능이 명시되면 그걸로 룰을 검색, 없으면(자유 RP 등) 상황 전체로 폴백
+    rag_query = f"{skill} 판정" if skill else user_context
+
+    if rag_query:
+        retrieved = await asyncio.to_thread(search_with_references, rag_query, 5)
+        rule_text = "\n\n".join(r["text"] for r in retrieved)
+    else:
+        rule_text = ""
 
     # 캐릭터 stat 가져오기. ui-> fastapi -> db(update)/ dicejudgement- > db불러오기 및 업데이트로 구상
     data = await collection2.find_one(
         {"character_id": request.senderId},
         {"_id": 0}
     )
+    # 캐릭터/스탯이 없으면 판정 불가 -> 원인을 명확히 드러내는 예외 발생
+    #  (None 을 그대로 두면 data["stat"] 에서 TypeError 로 모호하게 터짐)
+    if not data or "stat" not in data:
+        raise ValueError(f"캐릭터(character_id={request.senderId})의 스탯을 찾을 수 없습니다")
     available_keys = list(data["stat"].keys()) #출력할 수 있는 키를 주어진 값으로 제한
     
     # rule 기반 stat + Dice 로 판정 결과 출력 
@@ -63,6 +86,9 @@ async def dicejudgement(request: DiceMessage):
     target_stat = int(data["stat"][key])
     print(target_stat)
     print(parsed_req.reasoning)
+    # 주사위 값이 없으면(None) int 변환에서 모호하게 터지므로 먼저 명확히 막음
+    if request.diceval is None:
+        raise ValueError("주사위 값(diceval)이 없어 판정할 수 없습니다")
     dice_result = int(request.diceval)
     print(dice_result)
     op = parsed_req.operator

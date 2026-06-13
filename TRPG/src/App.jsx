@@ -3,11 +3,7 @@ import "./App.css";
 
 import characterSheet from "./data/characterSheet.json";
 
-// ★ 초상화 이미지 (1~4)
-import pc1Portrait from "./assets/pc1.png"; 
-import pc2Portrait from "./assets/pc2.png";
-import pc3Portrait from "./assets/pc3.png";
-import pc4Portrait from "./assets/pc4.png";
+// ★ 캐릭터 초상화는 백엔드(/character/{role})에서 서빙 -> getPortraitById 참고
 
 // ★ GPT 로봇 아이콘
 import gptRobot from "./assets/gptRobot.png";
@@ -116,20 +112,81 @@ const GROWTH_SKILLS = [
 
 const ALL_SKILLS = [...JOB_SKILLS, ...INTEREST_SKILLS, ...GROWTH_SKILLS];
 
-/** 캐릭터 id -> 초상화 이미지 매핑 */
+/** 캐릭터 id -> 초상화 이미지 (백엔드 서빙)
+ *  - 999: KPC(AI 동행 캐릭터)  -> /character/KPC
+ *  - 그 외 truthy id: 플레이어 -> /character/PC
+ */
 const getPortraitById = (id) => {
-  switch (id) {
-    case 1:
-      return pc1Portrait;
-    case 2:
-      return pc2Portrait;
-    case 3:
-      return pc3Portrait;
-    case 4:
-      return pc4Portrait;
-    default:
-      return null;
+  if (id === 999) return "http://localhost:8000/character/KPC";
+  if (id) return "http://localhost:8000/character/PC";
+  return null;
+};
+
+// 캐시 무력화용 버전 (이미지 교체 후 브라우저 캐시가 옛 버전을 잡고 있을 때 v를 올림)
+const IMG_V = "?v=3";
+// 채팅 아바타용 SD 이미지 (전신 스탠딩과 별개)
+const SD_PC = "http://localhost:8000/sd/PC" + IMG_V;
+const SD_KPC = "http://localhost:8000/sd/KPC" + IMG_V;
+
+/** 표시에서 내부 제어용 태그([장소: X], [페이싱 ...])는 제거 */
+const stripDisplayTags = (text) =>
+  (text || "")
+    .replace(/\[장소:[^\]]*\]/g, "")
+    .replace(/\[페이싱[^\]]*\]/g, "")
+    .trim();
+
+/** "GM: ..." / "KPC: ..." 세그먼트로 분리 (줄 단위 파싱)
+ *  - 줄머리가 GM:/KPC: 면 새 발화 시작, 그 외 줄은 직전 발화에 이어붙임(멀티라인 대사).
+ *  - 빈 KPC 줄(내용 없이 KPC: 만 있고 다음 줄에 GM:)에도 안전하게 동작. (정규식판은 이 경우 GM이 KPC에 빨려들어가는 버그가 있었음) */
+const splitGmKpc = (content) => {
+  const parts = [];
+  let cur = null;
+  for (const line of (content || "").split("\n")) {
+    const m = line.match(/^\s*(GM|KPC)\s*:\s*(.*)$/);
+    if (m) {
+      if (cur) parts.push(cur);
+      cur = { role: m[1], text: m[2] };
+    } else if (cur) {
+      cur.text += "\n" + line; // 이어지는 줄
+    }
+    // cur 없고 마커도 아니면(PROGRESS 등) 무시
   }
+  if (cur) parts.push(cur);
+  return parts
+    .map((p) => ({ role: p.role, text: stripDisplayTags(p.text) }))
+    .filter((p) => p.text); // 빈 세그먼트 제거
+};
+
+/** 메시지 1개 -> 화면 말풍선 배열. AI(senderId 999)면 GM/KPC로 분리해 각각 아바타 지정 */
+const getDisplayBubbles = (msg) => {
+  if (msg.senderId === 999) {
+    const content = msg.content || msg.text || "";
+    const parts = splitGmKpc(content);
+    const segs = parts.length
+      ? parts
+      : [{ role: "GM", text: stripDisplayTags(content) }];
+    return segs.map((p, i) => ({
+      key: `${msg.id}-${i}`,
+      sender: p.role,                              // "GM" / "KPC"
+      speaker: p.role,                             // 스탠딩 페이드용
+      text: p.text,
+      avatar: p.role === "KPC" ? SD_KPC : gptRobot, // KPC=SD 아바타, GM=로봇(내레이터)
+      date: msg.date,
+      time: msg.time,
+    }));
+  }
+  // 일반 메시지(유저/다이스봇 등)
+  return [
+    {
+      key: msg.id,
+      sender: msg.sender,
+      speaker: msg.senderId ? "PC" : null,         // 플레이어 발화
+      text: msg.text || msg.content,
+      avatar: msg.senderId ? SD_PC : null,         // 플레이어=SD PC
+      date: msg.date,
+      time: msg.time,
+    },
+  ];
 };
 
 function App() {
@@ -143,7 +200,7 @@ function App() {
 
   const [character, setCharacter] = useState(characterSheet.character);
   const options = characterSheet.options;
-  const [stats,setStats] = useState({
+  const DEFAULT_STATS = {
     STR: 0,
     DEX: 0,
     POW: 0,
@@ -153,7 +210,12 @@ function App() {
     SIZ: 0,
     INT: 0,
     MOVE: 0
-  });
+  };
+  const [stats,setStats] = useState(DEFAULT_STATS);
+  // GM의 [장소: X] 태그로 교체되는 배경 이미지 URL (null이면 기본 배경)
+  const [backgroundUrl, setBackgroundUrl] = useState(null);
+  // 현재 발화자("PC"/"KPC"/"GM") — 스탠딩 페이드용
+  const [currentSpeaker, setCurrentSpeaker] = useState(null);
   const handleStatChange = (e) => {
     const{name, value}=e.target;
     const numValue = value === ""?"": Number(value);
@@ -238,40 +300,14 @@ function App() {
   const [activeTab, setActiveTab] = useState("메인");
 
   const [chatMessages, setChatMessages] = useState({
-    메인: [
-      {
-        id: 1,
-        sender: "주낙엽",
-        senderId: null,
-        date: "2021/02/07",
-        text: "하… 오늘은 절묘하다.",
-      },
-    ],
-    정보: [
-      {
-        id: 2,
-        sender: "관리자",
-        senderId: null,
-        date: "2021/02/07",
-        text: "여기는 시나리오 정보 탭입니다.",
-      },
-    ],
-    잡담: [
-      {
-        id: 3,
-        sender: "플레이어",
-        senderId: null,
-        date: "2021/02/07",
-        text: "여긴 잡담방~",
-      },
-    ],
+    메인: [],
+    정보: [],
+    잡담: [],
   });
 
   const [chatText, setChatText] = useState("");
   const chatLogRef = useRef(null);
 
-  const [bgmTrack, setBgmTrack] = useState("BGM02");
-  const [bgmVolume, setBgmVolume] = useState(60);
 
   // ===== GPT 상태 =====
   const [gptOpen, setGptOpen] = useState(false);
@@ -428,6 +464,7 @@ function App() {
           dicedata
         ],
       }));
+      applyLocationBackground(dicedata.content);   // GM 응답의 [장소: X] -> 배경 교체
       }catch(e){
         console.error("주사위 입력 -> 객체 생성 -> FASTAPI main (/dice) sync 실패",e);
       }
@@ -465,6 +502,7 @@ function App() {
             data
             ],
           }));
+          applyLocationBackground(data.content);   // GM 응답의 [장소: X] -> 배경 교체
         } catch(e){
           console.error("메세지 입력 -> 객체 생성 -> FASTAPI main sync 실패",e);
         }
@@ -498,13 +536,6 @@ function App() {
     }));
   };
 
-  const handleChangeVolume = (e) => {
-    setBgmVolume(Number(e.target.value));
-  };
-
-  const handleSelectBgm = (track) => {
-    setBgmTrack(track);
-  };
 
   const handleOpenGpt = () => setGptOpen(true);
   const handleCloseGpt = () => setGptOpen(false);
@@ -601,6 +632,53 @@ function App() {
       console.error(error);
     }
   }
+  // ===== DB에서 캐릭터 스탯 불러오기 =====
+  const loadStatsFromDB = async (characterId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/stats/${characterId}`);
+      if (!response.ok) {
+        console.error("stat 불러오기 실패");
+        return;
+      }
+      const data = await response.json();
+      // 저장된 스탯이 있으면 폼에 채우고, 없으면 기본값(0)으로 초기화
+      setStats(data.stat ?? DEFAULT_STATS);
+    } catch (error) {
+      console.error("stat 불러오기 중 오류", error);
+    }
+  };
+  // 선택된 캐릭터가 바뀔 때마다 해당 캐릭터의 스탯을 DB에서 로드
+  useEffect(() => {
+    loadStatsFromDB(selectedCharacterId);
+  }, [selectedCharacterId]);
+  // ===== GM 응답의 [장소: X] 태그를 읽어 배경 이미지를 교체 =====
+  const applyLocationBackground = async (text) => {
+    if (!text) return;
+    const match = text.match(/\[장소:\s*([^\]]+)\]/);
+    if (!match) return;                       // 장소 태그 없으면 배경 유지
+    const location = match[1].trim();
+    const url = `http://localhost:8000/background/${encodeURIComponent(location)}`;
+    try {
+      const res = await fetch(url);           // 이미지 존재 여부 확인
+      if (res.ok) {
+        setBackgroundUrl(url);                // 있으면 교체
+      }
+      // 404(이미지 없는 장소)면 아무 것도 안 함 -> 이전 배경 유지(폴백)
+    } catch (e) {
+      console.error("배경 이미지 로드 실패", e);
+    }
+  };
+  // 최신 메시지의 발화자를 추적해 스탠딩 페이드를 갱신 (발화자 전환 시 active/dim 교체)
+  useEffect(() => {
+    const msgs = chatMessages[activeTab] || [];
+    const bubbles = msgs.flatMap((m) => getDisplayBubbles(m));
+    for (let i = bubbles.length - 1; i >= 0; i--) {
+      if (bubbles[i].speaker) {
+        setCurrentSpeaker(bubbles[i].speaker);
+        break;
+      }
+    }
+  }, [chatMessages, activeTab]);
   // ===== 캐릭터 시트를 JSON 파일로 저장 =====
   const handleExportCharacter = () => {
     const { date, time } = getNowDateTime();
@@ -940,7 +1018,8 @@ function App() {
   return (
     <div className="app-root">
       <div className="trpg-layout">
-        {/* LEFT PANEL */}
+        {/* LEFT PANEL — VN 화면 정리를 위해 숨김. 되살리려면 false를 true로 */}
+        {false && (
         <aside className="left-panel">
           <section className="char-list card">
             {characters.map((ch) => (
@@ -1023,6 +1102,7 @@ function App() {
             </div>
           </section>
         </aside>
+        )}
 
         {/* CENTER PANEL */}
         <main className="center-panel">
@@ -1041,31 +1121,6 @@ function App() {
               <div className="user-chip" onClick={() => setShowSheet(true)}>
                 {selectedCharacter?.name ?? "PN"}
               </div>
-            </div>
-          </div>
-
-          <div className="bgm-bar card">
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={bgmVolume}
-              onChange={handleChangeVolume}
-              style={{ width: "100%" }}
-            />
-            <div className="bgm-buttons">
-              <button
-                className={bgmTrack === "BGM01" ? "active" : ""}
-                onClick={() => handleSelectBgm("BGM01")}
-              >
-                BGM01
-              </button>
-              <button
-                className={bgmTrack === "BGM02" ? "active" : ""}
-                onClick={() => handleSelectBgm("BGM02")}
-              >
-                BGM02
-              </button>
             </div>
           </div>
 
@@ -1429,33 +1484,38 @@ function App() {
                   <span className="title-sub">Call of Cthulhu 7th</span>
                 </header>
 
-                <div className="screen-image" />
+                <div
+                  className="screen-image"
+                  style={
+                    backgroundUrl
+                      ? {
+                          backgroundImage: `url(${backgroundUrl})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }
+                      : undefined
+                  }
+                >
+                  {/* ★ 배경 위 캐릭터 스탠딩 (발화자=active, 그 외=dim) */}
+                  <div
+                    className={
+                      "standee standee-left " +
+                      (currentSpeaker === "PC" ? "speaking" : "dim")
+                    }
+                  >
+                    <img src={"http://localhost:8000/character/PC" + IMG_V} alt="PC" />
+                  </div>
+                  <div
+                    className={
+                      "standee standee-right " +
+                      (currentSpeaker === "KPC" ? "speaking" : "dim")
+                    }
+                  >
+                    <img src={"http://localhost:8000/character/KPC" + IMG_V} alt="KPC" />
+                  </div>
+                </div>
 
                 {/* ★ 하단 PC 초상화 (PC1~4) */}
-                <div className="screen-portraits">
-                  {characters.map((ch) => {
-                    const portraitSrc = getPortraitById(ch.id);
-
-                    return (
-                      <div className="portrait-slot" key={ch.id}>
-                        {portraitSrc ? (
-                          <img
-                            src={portraitSrc}
-                            alt={ch.name}
-                            className="portrait-img"
-                          />
-                        ) : (
-                          <div
-                            className="portrait-img portrait-fallback"
-                            style={{ background: ch.color }}
-                          />
-                        )}
-                        <div className="portrait-name">{ch.name}</div>
-                        <div className="portrait-status">O</div>
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
             </section>
           )}
@@ -1472,33 +1532,35 @@ function App() {
           </header>
 
           <section className="chat-log card" ref={chatLogRef}>
-            {(chatMessages[activeTab] || []).map((msg) => (
-              <div className="chat-item" key={msg.id}>
-                {/* ★ 채팅 아바타에도 초상화 */}
-                <div className="chat-avatar">
-                  {msg.senderId ? (
-                    <img
-                      src={getPortraitById(msg.senderId)}
-                      alt={msg.sender}
-                      className="chat-avatar-img"
-                    />
-                  ) : (
-                    <div className="chat-avatar-fallback" />
-                  )}
-                </div>
-
-                <div className="chat-content">
-                  <div className="chat-meta">
-                    <span className="chat-name">{msg.sender}</span>
-                    <span className="chat-date">
-                      {msg.date}
-                      {msg.time ? ` ${msg.time}` : ""}
-                    </span>
+            {(chatMessages[activeTab] || [])
+              .flatMap((msg) => getDisplayBubbles(msg))
+              .map((b) => (
+                <div className="chat-item" key={b.key}>
+                  {/* ★ 채팅 아바타 (GM=로봇 / KPC=생성 이미지 / 플레이어=PC) */}
+                  <div className="chat-avatar">
+                    {b.avatar ? (
+                      <img
+                        src={b.avatar}
+                        alt={b.sender}
+                        className="chat-avatar-img"
+                      />
+                    ) : (
+                      <div className="chat-avatar-fallback" />
+                    )}
                   </div>
-                  <div className="chat-text">{msg.text||msg.content}</div>
+
+                  <div className="chat-content">
+                    <div className="chat-meta">
+                      <span className="chat-name">{b.sender}</span>
+                      <span className="chat-date">
+                        {b.date}
+                        {b.time ? ` ${b.time}` : ""}
+                      </span>
+                    </div>
+                    <div className="chat-text">{b.text}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </section>
 
           <div className="chat-tabs card">

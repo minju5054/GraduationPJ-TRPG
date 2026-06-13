@@ -40,7 +40,8 @@ body {
   margin: 0 auto;
 
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr) 350px;
+  /* 왼쪽 패널 제거 -> 화면(중앙) + 채팅(우) 2컬럼 */
+  grid-template-columns: minmax(0, 1fr) 360px;
   gap: 12px;
 
   padding: 16px;
@@ -264,17 +265,18 @@ button:hover {
   background: #2196f3;
 }
 
-/* 메인 스크린 */
+/* 메인 스크린 — 배경 영역을 가운데 정렬 */
 .main-screen {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1.4fr 0.7fr;
-  gap: 8px;
+  display: flex;
+  justify-content: center;
   min-height: 0;
 }
 
-/* 왼쪽 화면 */
+/* 화면(배경) 블록 — 너무 넓지 않게 제한하고 중앙에 배치 */
 .screen-left {
+  width: 100%;
+  max-width: 900px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -306,6 +308,42 @@ button:hover {
     url("https://images.pexels.com/photos/235621/pexels-photo-235621.jpeg?auto=compress&cs=tinysrgb&w=800");
   background-size: cover;
   background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== 배경 위 캐릭터 스탠딩 (비주얼노벨) ===== */
+.standee {
+  position: absolute;
+  bottom: 0;
+  height: 92%;
+  /* 발화자 전환 시 부드러운 페이드 */
+  transition: opacity 0.45s ease, filter 0.45s ease, transform 0.45s ease;
+  pointer-events: none;
+}
+.standee img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.standee-left {
+  left: 3%;
+}
+.standee-right {
+  right: 3%;
+}
+/* 발화 중: 또렷하게 */
+.standee.speaking {
+  opacity: 1;
+  filter: none;
+  transform: translateY(0);
+}
+/* 비발화: 살짝 가라앉음 (너무 유령처럼 안 보이게 완화) */
+.standee.dim {
+  opacity: 0.78;
+  filter: brightness(0.72) saturate(0.9);
+  transform: translateY(1.5%);
 }
 
 /* ===== PC 초상화 영역 ===== */

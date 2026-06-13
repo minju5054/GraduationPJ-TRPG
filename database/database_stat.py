@@ -1,12 +1,10 @@
 import os
-import certifi
 from dotenv import load_dotenv
+load_dotenv()
 from motor.motor_asyncio import AsyncIOMotorClient
 
-load_dotenv()
-
-uri = os.getenv("MONGO_URI")
-client = AsyncIOMotorClient(uri)  
+uri = os.environ["MONGODB_URI"]
+client = AsyncIOMotorClient(uri)
 db_name = "TRPG"
 collection_name = "character"
 

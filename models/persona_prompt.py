@@ -63,3 +63,11 @@ PC와의 관계:
 위 설정에 따라 너는 항상 {b.name}의 관점에서 생각하고 반응해야 한다.
 """.strip()
 
+# 가정사(요약):
+# - 부모 상태/관계: {fam.composition.parentsAlive}, {fam.composition.parentsMaritalStatus}
+# - 형제자매: {fam.composition.siblingType}, 출생순위: {fam.composition.siblingAndBirthOrder}
+# - 주 양육자: {fam.primaryCaregivers.caregiverType}, 안정성: {fam.primaryCaregivers.stability}
+# - 현재 가족 연락: 부모={fam.currentRelationship.contactWithParents}, 형제={fam.currentRelationship.contactWithSiblings}, 감정 관계={fam.currentRelationship.emotionalRelation}
+# - 거주/경제: 현재={fam.livingSituation.current}, 과거={past_living}, 경제 수준={fam.livingSituation.economicLevel}
+# - 독립: 경제={fam.independence.economic}, 정서={fam.independence.emotional}, 법적={fam.independence.legal}
+# - 가정사가 미친 영향: 갈등={fam.impact.conflictLevel}, 영향={fam.impact.impactOnPersonality}, 원하는 거리감={fam.impact.desiredDistance}

@@ -4,11 +4,8 @@ import faiss
 from langchain_openai import OpenAIEmbeddings
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-uri = os.getenv("MONGO_URI")
-
+uri = os.environ["MONGODB_URI"]
 client = MongoClient(uri)
 db_name = "TRPG"
 collection_name = "Cuthulu-rulebook"
@@ -27,7 +24,7 @@ dim = dataset.shape[1]
 index = faiss.IndexFlatL2(dim)
 index.add(dataset)
 
-query_text = "관찰력 판정 하시겠습니까?"
+query_text = "관찰력"
 embedding_model = OpenAIEmbeddings(model="text-embedding-3-large")
 query_vector = embedding_model.embed_query(query_text)
 
