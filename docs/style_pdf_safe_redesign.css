@@ -2546,379 +2546,138 @@ code {
 }
 
 /* =========================================================
-   PATCH 01. 13-1 시스템 프롬프트 페이지 톤 다운
+   PATCH. Nav active / Prompt code / Demo video button
    ========================================================= */
 
+.nav a.is-active {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+}
+
 .prompt-codebox {
-    border: 1px solid var(--line);
-    background: #0f0f10;
-    padding: 24px;
-    overflow: auto;
+    background: #0f0f10 !important;
 }
 
-.prompt-code {
-    margin: 0;
-    font-family: var(--mono);
-    font-size: 15px;
-    line-height: 1.85;
-    color: #d6d6d6;
-    white-space: pre;
-}
-
+.prompt-code,
+.prompt-code code,
+.prompt-code span,
 .prompt-code .kw,
 .prompt-code .fn,
 .prompt-code .var,
 .prompt-code .str,
-.prompt-code .comment,
-.prompt-code .slot {
+.prompt-code .slot,
+.prompt-code .comment {
     background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
     border: 0 !important;
-    padding: 0 !important;
-    border-radius: 0 !important;
     box-shadow: none !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
 }
 
 .prompt-code .kw {
-    color: #77b3ff;
+    color: #77b3ff !important;
     font-weight: 800;
 }
 
 .prompt-code .fn {
-    color: #f3f3f3;
+    color: #f1f1f1 !important;
     font-weight: 800;
 }
 
 .prompt-code .var {
-    color: #d0d7e6;
+    color: #d6deea !important;
     font-weight: 700;
 }
 
 .prompt-code .str {
-    color: #a6e35f;
+    color: #a7ea66 !important;
     font-weight: 700;
 }
 
 .prompt-code .slot {
-    color: #9fc6ff;
+    color: #9fc6ff !important;
     font-weight: 800;
 }
 
 .prompt-code .comment {
-    color: #8ee6ae;
+    color: #93f0b4 !important;
     font-weight: 800;
 }
 
-.paper .prompt-codebox {
-    border-color: #d6d6d0;
-    background: #111;
-}
-
-.paper .prompt-code {
-    color: #e7e7e7;
-}
-
-.paper .prompt-code .kw {
-    color: #7db1ff;
-}
-
-.paper .prompt-code .fn {
-    color: #ffffff;
-}
-
-.paper .prompt-code .var {
-    color: #d6deea;
-}
-
-.paper .prompt-code .str {
-    color: #a7ea66;
-}
-
-.paper .prompt-code .slot {
-    color: #aad0ff;
-}
-
-.paper .prompt-code .comment {
-    color: #93f0b4;
-}
-
-/* =========================================================
-   PATCH 02. 19페이지 bgserve 가독성 수정
-   ========================================================= */
-
-.bgserve-panel {
-    border: 1px solid #d6d6d0;
-    background: #fff;
-    padding: 28px;
-    min-height: 100%;
-    color: #111;
-}
-
-.bgserve-panel h3 {
-    margin: 0 0 14px;
-    font-size: 30px;
-    line-height: 1.12;
-    letter-spacing: -0.045em;
-    color: #111;
-}
-
-.bgserve-panel p {
-    margin: 0;
-    color: #444;
-    font-size: 15px;
-    line-height: 1.75;
-}
-
-.bgserve-label {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #666;
-    margin-bottom: 18px;
-}
-
-.bgserve-panel code,
-.route-row code {
-    color: #fff;
-    background: #1b1b1d;
-    border-radius: 6px;
-    padding: 4px 8px;
-}
-
-.route-row {
-    display: grid;
-    grid-template-columns: 1.05fr 1fr;
-    gap: 16px;
-    align-items: start;
-    border-top: 1px solid #d6d6d0;
-    padding-top: 13px;
-}
-
-.route-row span {
-    color: #555;
-    font-size: 14px;
-    line-height: 1.55;
-}
-
-.rule-strip strong {
-    display: block;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: #111;
-    margin-bottom: 4px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.rule-strip span {
-    color: #555;
-    font-size: 14px;
-    line-height: 1.55;
-}
-
-.bgserve-flow {
-    margin-top: 24px;
-    border: 1px solid #d6d6d0;
-    background: #fff;
-    padding: 16px 18px;
+.demo-action-row {
+    margin-top: 26px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
-.bgserve-flow span {
-    border: 1px solid #ccc;
-    padding: 9px 12px;
-    font-size: 13px;
-    font-weight: 800;
-    background: #fafafa;
+.demo-video-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    background: #111;
+    color: #fff;
+    border: 1px solid #111;
+    padding: 14px 18px;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.demo-video-button::before {
+    content: "▶";
+    width: 28px;
+    height: 28px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    padding-left: 2px;
+}
+
+.demo-video-button span {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #aaa;
+    font-weight: 700;
+}
+
+.demo-video-button:hover {
+    transform: translateY(-2px);
+    background: #fff;
     color: #111;
 }
 
-.bgserve-flow b {
-    color: #777;
-    font-size: 18px;
-}
-
-/* =========================================================
-   PATCH 03. 22페이지 데모 섹션 레이아웃 재구성
-   ========================================================= */
-
-.demo-gallery {
-    margin-top: 34px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    align-items: start;
-}
-
-.demo-shot {
-    border: 1px solid #d6d6d0;
-    background: #fff;
-    padding: 12px;
-}
-
-.demo-shot img {
-    width: 100%;
-    display: block;
-}
-
-.demo-shot .caption {
-    margin-top: 10px;
-}
-
-.demo-feature-box {
-    margin-top: 22px;
-    border: 1px solid #d6d6d0;
-    background: #fff;
-    padding: 26px;
-}
-
-.demo-feature-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px 18px;
-    margin-top: 18px;
-}
-
-.demo-feature {
-    border-top: 1px solid #d6d6d0;
-    padding-top: 14px;
-}
-
-.demo-feature b {
-    display: block;
-    font-size: 20px;
-    line-height: 1.15;
-    letter-spacing: -0.04em;
-    margin-bottom: 6px;
-    color: #111;
-}
-
-.demo-feature p {
-    margin: 0;
+.demo-video-button:hover span {
     color: #555;
-    font-size: 14px;
-    line-height: 1.6;
 }
 
-@media (max-width: 820px) {
-
-    .demo-gallery,
-    .demo-feature-grid {
-        grid-template-columns: 1fr;
-    }
+.slide:not(.paper) .demo-video-button {
+    background: #fff;
+    color: #111;
+    border-color: #fff;
 }
 
-/* =========================================================
-   PDF Export Mode: 섹션별 페이지 분리
-   - dark / paper 배경 유지
-   ========================================================= */
-
-body.pdf-section-pages {
-    background: var(--bg);
-    color: var(--ink);
+.slide:not(.paper) .demo-video-button span {
+    color: #555;
 }
 
-body.pdf-section-pages .top,
-body.pdf-section-pages .printnote {
-    display: none !important;
+.slide:not(.paper) .demo-video-button:hover {
+    background: #111;
+    color: #fff;
 }
 
-body.pdf-section-pages main {
-    max-width: none;
-    width: 100%;
-    margin: 0;
-}
-
-/* 기본 slide는 원래처럼 dark */
-body.pdf-section-pages .slide {
-    min-height: auto;
-    margin: 0 !important;
-    border: 0;
-    border-radius: 0;
-    background: var(--bg) !important;
-    color: var(--ink) !important;
-    break-after: page;
-    page-break-after: always;
-}
-
-/* paper slide만 밝은 배경 */
-body.pdf-section-pages .slide.paper {
-    background: var(--paper) !important;
-    color: var(--paper-ink) !important;
-}
-
-/* 마지막 섹션 뒤에는 빈 페이지 만들지 않기 */
-body.pdf-section-pages .slide:last-of-type {
-    break-after: auto;
-    page-break-after: auto;
-}
-
-/* dark 섹션 글씨색 복구 */
-body.pdf-section-pages .slide:not(.paper) .lead,
-body.pdf-section-pages .slide:not(.paper) .bullets li,
-body.pdf-section-pages .slide:not(.paper) .card p,
-body.pdf-section-pages .slide:not(.paper) .muted,
-body.pdf-section-pages .slide:not(.paper) .reference {
-    color: #d5d5d5 !important;
-}
-
-body.pdf-section-pages .slide:not(.paper) .section-title,
-body.pdf-section-pages .slide:not(.paper) .big-title,
-body.pdf-section-pages .slide:not(.paper) .mini-title,
-body.pdf-section-pages .slide:not(.paper) h1,
-body.pdf-section-pages .slide:not(.paper) h2,
-body.pdf-section-pages .slide:not(.paper) h3,
-body.pdf-section-pages .slide:not(.paper) h4 {
-    color: #fff !important;
-}
-
-body.pdf-section-pages .slide:not(.paper) .no,
-body.pdf-section-pages .slide:not(.paper) .kicker {
-    color: var(--muted) !important;
-}
-
-/* paper 섹션 글씨색 유지 */
-body.pdf-section-pages .slide.paper .lead,
-body.pdf-section-pages .slide.paper .bullets li,
-body.pdf-section-pages .slide.paper .card p,
-body.pdf-section-pages .slide.paper .muted,
-body.pdf-section-pages .slide.paper .reference {
-    color: #333 !important;
-}
-
-body.pdf-section-pages .slide.paper .section-title,
-body.pdf-section-pages .slide.paper .big-title,
-body.pdf-section-pages .slide.paper .mini-title,
-body.pdf-section-pages .slide.paper h1,
-body.pdf-section-pages .slide.paper h2,
-body.pdf-section-pages .slide.paper h3,
-body.pdf-section-pages .slide.paper h4 {
-    color: #111 !important;
-}
-
-body.pdf-section-pages .slide.paper .no,
-body.pdf-section-pages .slide.paper .kicker {
-    color: #707070 !important;
-}
-
-/* 섹션 내부에서 카드/이미지/표가 중간에 잘리는 것 완화 */
-body.pdf-section-pages .card,
-body.pdf-section-pages .imgbox,
-body.pdf-section-pages .diagram,
-body.pdf-section-pages .table-wrap,
-body.pdf-section-pages .pain-board,
-body.pdf-section-pages .service-row,
-body.pdf-section-pages .engine-board,
-body.pdf-section-pages .rag-redesign,
-body.pdf-section-pages .fix-board,
-body.pdf-section-pages .demo-gallery,
-body.pdf-section-pages .demo-feature-box,
-body.pdf-section-pages .mentor-item,
-body.pdf-section-pages .future-lane {
-    break-inside: avoid;
-    page-break-inside: avoid;
+.slide:not(.paper) .demo-video-button:hover span {
+    color: #aaa;
 }
