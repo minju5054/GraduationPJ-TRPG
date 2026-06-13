@@ -11,9 +11,11 @@
 </head>
 
 <body>
+  <!-- PDF 저장 버튼은 GitHub Pages 공개용에서는 비활성화
   <button class="printnote" type="button" id="pdfExportButton" aria-label="Puppeteer PDF 저장">
     PDF 저장
   </button>
+  -->
   <header class="top">
     <div class="top-inner">
       <div class="brand">
@@ -45,7 +47,7 @@
           창업
         </a>
         <a href="#mentor">
-          멘토링
+          마무리
         </a>
       </nav>
     </div>
@@ -868,7 +870,7 @@
         <b>→</b>
         <span>Dice Judgment</span>
         <b>→</b>
-        <span>GM Narrative</span>     
+        <span>GM Narrative</span>
       </div>
     </section>
     <section class="slide" id="storytelling">
@@ -1633,7 +1635,7 @@
       </div>
     </section>
 
-    <section class="slide paper" id="demo-output">
+    <section class="slide paper" id="demo-output" style="overflow:hidden;">
       <div class="no">
         22 / Final Output &amp; Demo UI
       </div>
@@ -1650,26 +1652,143 @@
         실제 비주얼 노벨처럼 세션이 진행되는 화면으로 구현되었다.
       </p>
 
-      <div class="demo-gallery">
-        <div class="demo-shot">
-          <img alt="실낙원 현관 장면 데모 UI" src="BetterGMThanYours_readable_assets/demo_ui_entrance.png" />
+      <div class="demo-video-linkbox" style="
+          width:100%;
+          max-width:920px;
+          margin:28px auto 30px;
+          box-sizing:border-box;
+          border:1px solid rgba(0,0,0,0.14);
+          background:#111;
+          color:#fff;
+          padding:28px;
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:24px;
+          overflow:hidden;
+        ">
+        <div style="min-width:0;">
+          <div style="
+              font-family:var(--mono);
+              font-size:11px;
+              letter-spacing:0.14em;
+              text-transform:uppercase;
+              color:#aaa;
+              font-weight:800;
+              margin-bottom:10px;
+            ">
+            Demo Video
+          </div>
+
+          <h3 style="
+              margin:0;
+              color:#fff;
+              font-size:26px;
+              line-height:1.15;
+              letter-spacing:-0.04em;
+            ">
+            Better GM Than Yours
+            <br />
+            실제 세션 UI 데모
+          </h3>
+
+          <p style="
+              margin:12px 0 0;
+              color:#cfcfcf;
+              font-size:15px;
+              line-height:1.65;
+              word-break:keep-all;
+            ">
+          </p>
+        </div>
+
+        <a href="https://youtu.be/Gmc5ucpyPt4?si=mZDVxCuNQNyfGamG" target="_blank" rel="noopener noreferrer" style="
+            flex:0 0 auto;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:12px;
+            min-width:190px;
+            padding:15px 18px;
+            background:#fff;
+            color:#111;
+            border:1px solid #fff;
+            text-decoration:none;
+            font-size:15px;
+            font-weight:900;
+            letter-spacing:-0.03em;
+          ">
+          ▶ YouTube에서 보기
+        </a>
+      </div>
+
+      <div class="demo-gallery" style="
+          width:100%;
+          max-width:100%;
+          display:grid;
+          grid-template-columns:repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+          gap:18px;
+          margin-top:24px;
+          box-sizing:border-box;
+          overflow:hidden;
+        ">
+        <div class="demo-shot" style="
+            min-width:0;
+            width:100%;
+            max-width:100%;
+            box-sizing:border-box;
+            overflow:hidden;
+          ">
+          <img alt="실낙원 현관 장면 데모 UI" src="BetterGMThanYours_readable_assets/demo_ui_entrance.png" style="
+              display:block;
+              width:100%;
+              max-width:100%;
+              height:auto;
+              box-sizing:border-box;
+            " />
           <div class="caption">
             배경 이미지 위에 PC/KPC 스탠딩 이미지를 합성한 실제 세션 화면
           </div>
         </div>
 
-        <div class="demo-shot">
-          <img alt="실낙원 거실 장면 데모 UI" src="BetterGMThanYours_readable_assets/demo_ui_livingroom.png" />
+        <div class="demo-shot" style="
+            min-width:0;
+            width:100%;
+            max-width:100%;
+            box-sizing:border-box;
+            overflow:hidden;
+          ">
+          <img alt="실낙원 거실 장면 데모 UI" src="BetterGMThanYours_readable_assets/demo_ui_livingroom.png" style="
+              display:block;
+              width:100%;
+              max-width:100%;
+              height:auto;
+              box-sizing:border-box;
+            " />
           <div class="caption">
             장소 태그에 따라 배경이 전환되고, 캐릭터 강조 상태가 달라지는 화면
           </div>
         </div>
       </div>
 
-      <div class="demo-feature-box">
+      <div class="demo-feature-box" style="
+          width:100%;
+          max-width:100%;
+          box-sizing:border-box;
+          overflow:hidden;
+        ">
         <span class="demo-kicker">Why this UI works</span>
-        <div class="demo-feature-grid">
-          <div class="demo-feature">
+
+        <div class="demo-feature-grid" style="
+            width:100%;
+            max-width:100%;
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+            gap:14px;
+            box-sizing:border-box;
+            overflow:hidden;
+          ">
+          <div class="demo-feature" style="min-width:0;">
             <b>Visual Novel Layout</b>
             <p>
               현재 장소를 배경으로 표시하고 PC/KPC를 스탠딩 이미지로 배치해
@@ -1677,7 +1796,7 @@
             </p>
           </div>
 
-          <div class="demo-feature">
+          <div class="demo-feature" style="min-width:0;">
             <b>Character Focus</b>
             <p>
               말하는 캐릭터는 앞으로 오고, 말하지 않는 캐릭터는 dim 처리해
@@ -1685,7 +1804,7 @@
             </p>
           </div>
 
-          <div class="demo-feature">
+          <div class="demo-feature" style="min-width:0;">
             <b>Portrait Chat</b>
             <p>
               오른쪽 채팅 로그에는 캐릭터 초상화 기반 프로필 이미지를 함께 출력해
@@ -1693,7 +1812,7 @@
             </p>
           </div>
 
-          <div class="demo-feature">
+          <div class="demo-feature" style="min-width:0;">
             <b>Layered Composition</b>
             <p>
               배경·스탠딩·초상화를 분리된 레이어로 관리해
@@ -2580,29 +2699,138 @@
     Better GM Than Yours · 4조 밥사조 · 최종 결과 보고서
   </footer>
   <script>
-    const navLinks = [...document.querySelectorAll(".nav a")];
-    const ids = navLinks
-      .map((a) => document.querySelector(a.getAttribute("href")))
-      .filter(Boolean);
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            navLinks.forEach((a) => (a.style.background = ""));
-            const cur = navLinks.find((a) => a.getAttribute("href") === "#" + e.target.id);
-            if (cur) {
-              cur.style.background = "#fff";
-              cur.style.color = "#000";
-              cur.style.borderColor = "#fff";
-            }
-          }
+    (function () {
+      const navLinks = [...document.querySelectorAll(".nav a")];
+      const sections = [...document.querySelectorAll("main .slide[id]")];
+
+      if (!navLinks.length || !sections.length) return;
+
+      const navMap = new Map(
+        navLinks.map((a) => [a.getAttribute("href").replace("#", ""), a])
+      );
+
+      const sectionGroups = {
+        trpg: [
+          "cover",
+          "summary",
+          "trpg",
+          "problem",
+          "solve",
+          "services",
+          "aiadv"
+        ],
+
+        mvp: [
+          "mvp",
+          "flow",
+          "demoresult"
+        ],
+
+        tech: [
+          "tech",
+          "architecture",
+          "gameplay",
+          "rag",
+          "storytelling",
+          "personality"
+        ],
+
+        prompt: [
+          "prompt",
+          "system-prompt",
+          "promptmethods"
+        ],
+
+        image: [
+          "image",
+          "staticbg",
+          "bgserve",
+          "portrait",
+          "updatedarch",
+          "demo-output"
+        ],
+
+        artifact: [
+          "artifact"
+        ],
+
+        startup: [
+          "startup",
+          "business",
+          "roadmap"
+        ],
+
+        mentor: [
+          "mentor",
+          "limitations",
+          "copyright",
+          "github",
+          "references",
+          "end"
+        ]
+      };
+
+      function getNavId(sectionId) {
+        if (navMap.has(sectionId)) return sectionId;
+
+        for (const [navId, ids] of Object.entries(sectionGroups)) {
+          if (ids.includes(sectionId)) return navId;
+        }
+
+        return null;
+      }
+
+      function setActive(navId) {
+        navLinks.forEach((a) => {
+          const isActive = a.getAttribute("href") === "#" + navId;
+          a.classList.toggle("is-active", isActive);
         });
-      },
-      { threshold: 0.35 },
-    );
-    ids.forEach((s) => io.observe(s));
+      }
+
+      function updateActiveNav() {
+        const markerY = window.scrollY + window.innerHeight * 0.42;
+        let currentSection = sections[0];
+
+        for (const section of sections) {
+          if (section.offsetTop <= markerY) {
+            currentSection = section;
+          } else {
+            break;
+          }
+        }
+
+        const navId = getNavId(currentSection.id);
+        if (navId) setActive(navId);
+      }
+
+      let ticking = false;
+
+      function requestUpdate() {
+        if (ticking) return;
+
+        ticking = true;
+        window.requestAnimationFrame(() => {
+          updateActiveNav();
+          ticking = false;
+        });
+      }
+
+      window.addEventListener("scroll", requestUpdate, { passive: true });
+      window.addEventListener("resize", requestUpdate);
+      window.addEventListener("load", updateActiveNav);
+
+      navLinks.forEach((a) => {
+        a.addEventListener("click", () => {
+          const navId = a.getAttribute("href").replace("#", "");
+          setActive(navId);
+        });
+      });
+
+      updateActiveNav();
+    })();
   </script>
 
+  <!-- PDF export script is disabled on GitHub Pages.
   <script>
     (function () {
       const button = document.getElementById("pdfExportButton");
@@ -2658,6 +2886,7 @@
       });
     })();
   </script>
+  -->
 
 </body>
 
