@@ -216,7 +216,7 @@ GraduationPJ-TRPG/
 
 ## Project Period
 
-2026.03.03 - 2026.06.30
+2025.10.03 - 2026.06.30
 
 <br />
 
