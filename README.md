@@ -151,3 +151,9 @@ TRPG를 즐기려면 현실적으로 아래 비용이 크다.
 - 본 프로젝트는 “대화가 길어질수록 좋은” 형태가 아니라, **세션의 시작부터 종료까지 완결**을 지향한다.
 - 현재 버전은 **기능 검증(프로토타입)** 중심으로 설계되었다.
 
+---
+
+## Final Report
+
+[View Final Report](https://minju5054.github.io/GraduationPJ-TRPG/)
+
