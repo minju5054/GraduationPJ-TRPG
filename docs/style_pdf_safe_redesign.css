@@ -2681,3 +2681,66 @@ code {
 .slide:not(.paper) .demo-video-button:hover span {
     color: #aaa;
 }
+
+/* =========================================================
+   PATCH. 13-1 system prompt code highlight cleanup
+   ========================================================= */
+
+#system-prompt .prompt-codebox {
+  background: #0f0f10 !important;
+}
+
+#system-prompt .prompt-code,
+#system-prompt .prompt-code code {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* 글자 뒤에만 깔리는 토큰 배경 완전 제거 */
+#system-prompt .prompt-code span,
+#system-prompt .prompt-code .kw,
+#system-prompt .prompt-code .fn,
+#system-prompt .prompt-code .var,
+#system-prompt .prompt-code .str,
+#system-prompt .prompt-code .slot,
+#system-prompt .prompt-code .comment {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+/* 색상만 남기기 */
+#system-prompt .prompt-code .kw {
+  color: #8bbcff !important;
+  font-weight: 800;
+}
+
+#system-prompt .prompt-code .fn {
+  color: #f4f4f4 !important;
+  font-weight: 800;
+}
+
+#system-prompt .prompt-code .var {
+  color: #d6deea !important;
+  font-weight: 700;
+}
+
+#system-prompt .prompt-code .str {
+  color: #a7ea66 !important;
+  font-weight: 700;
+}
+
+#system-prompt .prompt-code .slot {
+  color: #9fc6ff !important;
+  font-weight: 800;
+}
+
+#system-prompt .prompt-code .comment {
+  color: #93f0b4 !important;
+  font-weight: 800;
+}
